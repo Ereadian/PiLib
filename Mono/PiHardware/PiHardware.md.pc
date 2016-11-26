@@ -1,0 +1,5 @@
+Name: PiHardware
+Description: 
+Version: 0.1
+Libs: -L"/home/lixinxu/GitHub/PiLib/Mono/PiHardware/bin/Debug" -lPiHardware
+Cflags: -I"/home/lixinxu/GitHub/PiLib/Mono/PiHardware"

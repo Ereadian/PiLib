@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{09D10905-DFCE-4426-B2C2-67371F1F4499}</ProjectGuid>
+    <Compiler>
+      <Compiler ctype="GccCompiler" />
+    </Compiler>
+    <Language>C</Language>
+    <Target>Bin</Target>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <OutputName>PiHardware</OutputName>
+    <CompileTarget>StaticLibrary</CompileTarget>
+    <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <OutputName>PiHardware</OutputName>
+    <CompileTarget>StaticLibrary</CompileTarget>
+    <OptimizationLevel>3</OptimizationLevel>
+    <DefineSymbols>MONODEVELOP</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="PiHardware.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PiHardware.c" />
+  </ItemGroup>
+</Project>
