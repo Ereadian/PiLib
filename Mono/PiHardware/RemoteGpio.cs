@@ -93,7 +93,7 @@
         {
             this.SendPackage(
                 "Failed to send package to remote when setting pin direction. Number of bytes get sent:{0}",
-                (byte)Command.SetModel,
+                (byte)Command.SetPinDirection,
                 (byte)this.GetTargetPinNumber(pinNumber),
                 (byte)direction);
         }
@@ -108,7 +108,7 @@
             {
                 this.SendPackage(
                     "Failed to send package to remote when reading pin value. Number of bytes get sent:{0}",
-                    (byte)Command.GetValue,
+                    (byte)Command.GetPinValue,
                     (byte)this.GetTargetPinNumber(pinNumber));
 
                 var data = this.ReadPackage(
@@ -120,10 +120,24 @@
             {
                 this.SendPackage(
                     "Failed to send package to remote when setting pin value. Number of bytes get sent:{0}",
-                    (byte)Command.SetValue,
+                    (byte)Command.SetPinValue,
                     (byte)this.GetTargetPinNumber(pinNumber),
                     (byte)value);
             }
+        }
+
+        /// <summary>
+        /// Set button mode
+        /// </summary>
+        /// <param name="pinNumber">Pin number.</param>
+        /// <param name="mode">Button mode.</param>
+        public void SetButtonMode(int pinNumber, ButtonMode mode)
+        {
+            this.SendPackage(
+                "Failed to send package to remote when setting button mode. Number of bytes get sent:{0}",
+                (byte)Command.SetButtonMode,
+                (byte)this.GetTargetPinNumber(pinNumber),
+                (byte)mode);
         }
 
         /// <summary>
@@ -244,17 +258,22 @@
             /// <summary>
             /// Set pin model
             /// </summary>
-            SetModel = 1,
+            SetPinDirection = 1,
 
             /// <summary>
             /// Set pin value
             /// </summary>
-            SetValue = 2,
+            SetPinValue = 2,
 
             /// <summary>
             /// Get pin value
             /// </summary>
-            GetValue = 3
+            GetPinValue = 3,
+
+            /// <summary>
+            /// Set button mode
+            /// </summary>
+            SetButtonMode = 4,
         }
     }
 }

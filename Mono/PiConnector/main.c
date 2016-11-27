@@ -14,6 +14,7 @@
 #define COMMAND_PIN_SET_MODE 1
 #define COMMAND_PIN_SET_VALUE 2
 #define COMMAND_PIN_GET_VALUE 3
+#define COMMAND_BUTTON_SET_MODE 4
 
 int sockfd;
 
@@ -138,6 +139,19 @@ int main (int argc, char *argv[])
 						}
 					}
 					break;
+                case COMMAND_BUTTON_SET_MODE:
+                    n = read(newsockfd, buffer, 2);
+                    if (n < 2)
+                    {
+                        perror("ERROR on read data for setting button mode");
+                        run = 0;
+                    }
+                    else
+                    {
+                        printf("Set button mode. pin %d, mode:%d\n", (int)buffer[0], (int)buffer[1]);
+                        pullUpDnControl((int)buffer[0], (int)buffer[1]);
+                    }
+                    break;
 				default:
 					perror("ERROR bad command id");
 					run = 0;

@@ -40,6 +40,7 @@
     <Compile Include="GpioPinValue.cs" />
     <Compile Include="Singleton.cs" />
     <Compile Include="RemoteGpio.cs" />
+    <Compile Include="ButtonMode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

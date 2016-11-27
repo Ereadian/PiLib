@@ -25,5 +25,12 @@
         /// </summary>
         /// <param name="pinNumber">Pin number.</param>
         GpioPinValue this[int pinNumber]{ get; set;}
+
+        /// <summary>
+        /// Set button mode
+        /// </summary>
+        /// <param name="pinNumber">Pin number.</param>
+        /// <param name="mode">Button mode.</param>
+        void SetButtonMode(int pinNumber, ButtonMode mode);
 	}
 }
