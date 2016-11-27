@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2857B73E-F847-4B02-9238-064979017E93}") = "PiHardware", "PiHardware\PiHardware.cproj", "{09D10905-DFCE-4426-B2C2-67371F1F4499}"
+Project("{2857B73E-F847-4B02-9238-064979017E93}") = "PiConnector", "PiConnector\PiConnector.cproj", "{12E06183-56C3-4124-9D3E-5B004368B042}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,12 +9,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{09D10905-DFCE-4426-B2C2-67371F1F4499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09D10905-DFCE-4426-B2C2-67371F1F4499}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09D10905-DFCE-4426-B2C2-67371F1F4499}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09D10905-DFCE-4426-B2C2-67371F1F4499}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12E06183-56C3-4124-9D3E-5B004368B042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12E06183-56C3-4124-9D3E-5B004368B042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12E06183-56C3-4124-9D3E-5B004368B042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12E06183-56C3-4124-9D3E-5B004368B042}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = PiHardware\PiHardware.cproj
+		StartupItem = PiConnector\PiConnector.cproj
 	EndGlobalSection
 EndGlobal
