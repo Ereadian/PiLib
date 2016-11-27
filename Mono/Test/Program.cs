@@ -7,7 +7,10 @@
     {
         public static void Main(string[] args)
         {
+            const int maxDelay = 10;
+            var delay = maxDelay;
             var pins = new int[]{5, 17};
+            var buttonPin = 18;
             var values = new GpioPinValue[]{ GpioPinValue.Low, GpioPinValue.High };
             var value = 0;
             using (var gpio = new RemoteGpio( PinNaming.BCM))
@@ -16,13 +19,28 @@
                 {
                     gpio.SetPinDirection(pin, GpioPinDirection.Output);
                 }
+                gpio.SetButtonMode(buttonPin, ButtonMode.PudUp);
 
+                var delayCount = 0;
                 while (!Console.KeyAvailable)
                 {
-                    gpio[pins[0]] = values[value];
-                    value = 1 - value;
-                    gpio[pins[1]] = values[value];
-                    System.Threading.Thread.Sleep(200);
+                    if ( -- delayCount < 1)
+                    {
+                        gpio[pins[0]] = values[value];
+                        value = 1 - value;
+                        gpio[pins[1]] = values[value];
+                        delayCount = delay;
+                    }
+
+                    if (gpio[buttonPin] == GpioPinValue.Low)
+                    {
+                        if (--delay < 1)
+                        {
+                            delay = maxDelay;
+                        }
+                    }
+
+                    System.Threading.Thread.Sleep(50);
                 }
             }
         }
