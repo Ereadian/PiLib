@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle ("PiHardware")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("")]
+[assembly: AssemblyCompany ("Ereadian")]
 [assembly: AssemblyProduct ("")]
 [assembly: AssemblyCopyright ("lixinxu")]
 [assembly: AssemblyTrademark ("")]

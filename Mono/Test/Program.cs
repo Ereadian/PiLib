@@ -1,6 +1,7 @@
 ﻿namespace Ereadian.RaspberryPi.Library.Hardware.Test
 {
     using System;
+    using System.Diagnostics;
 
     class MainClass
     {

@@ -6,18 +6,44 @@
     using System.Net;
     using System.Net.Sockets;
 
+    /// <summary>
+    /// Remote GPIO operator
+    /// </summary>
     public class RemoteGpio : IGpio
     {
+        /// <summary>
+        /// Default remote address
+        /// </summary>
         private const string LocalAddress = "localhost";
+
+        /// <summary>
+        /// Default port
+        /// </summary>
         private const int DefaultPort = 5555;
 
+        /// <summary>
+        /// The current pin naming.
+        /// </summary>
         private PinNaming currentPinNaming;
+
+        /// <summary>
+        /// The socket connected to the remote
+        /// </summary>
         private Socket socket;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> class.
+        /// </summary>
         public RemoteGpio() : this(PinNaming.Physical)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> class.
+        /// </summary>
+        /// <param name="pinNaming">Pin naming.</param>
+        /// <param name="remoteAddress">Remote address.</param>
+        /// <param name="port">Port.</param>
         public RemoteGpio(PinNaming pinNaming, string remoteAddress = null, int port = DefaultPort)
         {
             this.currentPinNaming = pinNaming;
@@ -100,12 +126,24 @@
             }
         }
 
+        /// <summary>
+        /// Releases all resource used by the <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> object.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the
+        /// <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/>. The <see cref="Dispose"/> method leaves the
+        /// <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> in an unusable state. After calling
+        /// <see cref="Dispose"/>, you must release all references to the
+        /// <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> so the garbage collector can reclaim the
+        /// memory that the <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> was occupying.</remarks>
         public void Dispose()
         {
             this.DisposeInstance();
         }
         #endregion interface implementation
 
+        /// <summary>
+        /// Disposes resources of current instance.
+        /// </summary>
         protected virtual void DisposeInstance()
         {
             lock (this)
@@ -126,6 +164,12 @@
             }
         }
 
+        /// <summary>
+        /// Gets the target pin number.
+        /// </summary>
+        /// <returns>The target pin number.</returns>
+        /// <param name="currentPinNumber">Current pin number.</param>
+        /// <param name="targetPinName">Target pin naming system</param>
         protected virtual int GetTargetPinNumber(int currentPinNumber, PinNaming targetPinName = PinNaming.WiringPi)
         {
             var mapping = Singleton<PinNumberMapping>.Instance;
@@ -145,6 +189,11 @@
             return targetPinNumber;
         }
 
+        /// <summary>
+        /// Sends a package to network.
+        /// </summary>
+        /// <param name="errorMessageTemplate">Error message template.</param>
+        /// <param name="package">Package.</param>
         private void SendPackage(string errorMessageTemplate, params byte[] package)
         {
             var n = this.socket.Send(package);
@@ -159,6 +208,12 @@
             }
         }
 
+        /// <summary>
+        /// Reads a package from network
+        /// </summary>
+        /// <returns>The package.</returns>
+        /// <param name="errorMessageTemplate">Error message template.</param>
+        /// <param name="packageSize">Package size.</param>
         private byte[] ReadPackage(string errorMessageTemplate, int packageSize)
         {
             var package = new byte[packageSize];
@@ -176,11 +231,29 @@
             return package;
         }
 
+        /// <summary>
+        /// Command types
+        /// </summary>
         private enum Command : byte
         {
+            /// <summary>
+            /// Finish the network communication
+            /// </summary>
             End = 0,
+
+            /// <summary>
+            /// Set pin model
+            /// </summary>
             SetModel = 1,
+
+            /// <summary>
+            /// Set pin value
+            /// </summary>
             SetValue = 2,
+
+            /// <summary>
+            /// Get pin value
+            /// </summary>
             GetValue = 3
         }
     }
