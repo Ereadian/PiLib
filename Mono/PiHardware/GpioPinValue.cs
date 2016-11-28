@@ -8,12 +8,12 @@
         /// <summary>
         /// The low.
         /// </summary>
-        Low,
+        Low = 0,
 
         /// <summary>
         /// The high.
         /// </summary>
-        High
+        High = 1
     }
 }
 

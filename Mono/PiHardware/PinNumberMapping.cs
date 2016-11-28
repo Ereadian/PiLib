@@ -8,7 +8,7 @@
 	/// <summary>
 	/// Names Pin number to physical pin number mapping.
 	/// </summary>
-    public class PinNumberMapping
+    public class PinNumberMapping : IPinNumberMapping
 	{
         /// <summary>
         /// The invalid pin number.

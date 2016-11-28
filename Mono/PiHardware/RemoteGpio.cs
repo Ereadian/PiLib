@@ -9,7 +9,7 @@
     /// <summary>
     /// Remote GPIO operator
     /// </summary>
-    public class RemoteGpio : IGpio
+    public class RemoteGpio : GpioBase
     {
         /// <summary>
         /// Default remote address
@@ -20,12 +20,6 @@
         /// Default port
         /// </summary>
         private const int DefaultPort = 5555;
-
-        /// <summary>
-        /// The current pin naming.
-        /// </summary>
-        private PinNaming currentPinNaming;
-
         /// <summary>
         /// The socket connected to the remote
         /// </summary>
@@ -34,7 +28,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> class.
         /// </summary>
-        public RemoteGpio() : this(PinNaming.Physical)
+        public RemoteGpio() : this(PinNaming.BCM)
         {
         }
 
@@ -44,9 +38,8 @@
         /// <param name="pinNaming">Pin naming.</param>
         /// <param name="remoteAddress">Remote address.</param>
         /// <param name="port">Port.</param>
-        public RemoteGpio(PinNaming pinNaming, string remoteAddress = null, int port = DefaultPort)
+        public RemoteGpio(PinNaming pinNaming, string remoteAddress = null, int port = DefaultPort) : base(pinNaming)
         {
-            this.currentPinNaming = pinNaming;
             this.socket = null;
 
             if (string.IsNullOrEmpty(remoteAddress))
@@ -71,25 +64,13 @@
             Trace.TraceInformation("Remote GPIO has been connected");
         }
 
-        #region interface implementation
-        /// <summary>
-        /// Gets the current pin naming.
-        /// </summary>
-        /// <value>The current pin naming.</value>
-        public PinNaming CurrentPinNaming
-        {
-            get
-            {
-                return this.currentPinNaming;
-            }
-        }
-
+        #region abstract class implementation
         /// <summary>
         /// Sets the pin direction.
         /// </summary>
         /// <param name="pinNumber">Pin number.</param>
         /// <param name="direction">Pin Direction.</param>
-        public void SetPinDirection(int pinNumber, GpioPinDirection direction)
+        public override void SetPinDirection(int pinNumber, GpioPinDirection direction)
         {
             this.SendPackage(
                 "Failed to send package to remote when setting pin direction. Number of bytes get sent:{0}",
@@ -102,7 +83,7 @@
         /// Gets or sets the <see cref="Ereadian.RaspberryPi.Library.Hardware.IGpio"/> value for the specified pin.
         /// </summary>
         /// <param name="pinNumber">Pin number.</param>
-        public GpioPinValue this[int pinNumber]
+        public override GpioPinValue this[int pinNumber]
         {
             get
             {
@@ -131,7 +112,7 @@
         /// </summary>
         /// <param name="pinNumber">Pin number.</param>
         /// <param name="mode">Button mode.</param>
-        public void SetButtonMode(int pinNumber, ButtonMode mode)
+        public override void SetButtonMode(int pinNumber, ButtonMode mode)
         {
             this.SendPackage(
                 "Failed to send package to remote when setting button mode. Number of bytes get sent:{0}",
@@ -139,26 +120,12 @@
                 (byte)this.GetTargetPinNumber(pinNumber),
                 (byte)mode);
         }
-
-        /// <summary>
-        /// Releases all resource used by the <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> object.
-        /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the
-        /// <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/>. The <see cref="Dispose"/> method leaves the
-        /// <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> in an unusable state. After calling
-        /// <see cref="Dispose"/>, you must release all references to the
-        /// <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> so the garbage collector can reclaim the
-        /// memory that the <see cref="Ereadian.RaspberryPi.Library.Hardware.RemoteGpio"/> was occupying.</remarks>
-        public void Dispose()
-        {
-            this.DisposeInstance();
-        }
-        #endregion interface implementation
+        #endregion abstract class implementation
 
         /// <summary>
         /// Disposes resources of current instance.
         /// </summary>
-        protected virtual void DisposeInstance()
+        protected override void DisposeInstance()
         {
             lock (this)
             {
@@ -176,31 +143,6 @@
                     this.socket = null;
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets the target pin number.
-        /// </summary>
-        /// <returns>The target pin number.</returns>
-        /// <param name="currentPinNumber">Current pin number.</param>
-        /// <param name="targetPinName">Target pin naming system</param>
-        protected virtual int GetTargetPinNumber(int currentPinNumber, PinNaming targetPinName = PinNaming.WiringPi)
-        {
-            var mapping = Singleton<PinNumberMapping>.Instance;
-            int targetPinNumber;
-            if (!mapping.TryGetPinNumber(this.CurrentPinNaming, targetPinName, currentPinNumber, out targetPinNumber))
-            {
-                var errorMessage = string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Cannot convert pin number {0} from {1} to {2}",
-                    currentPinNumber,
-                    this.CurrentPinNaming,
-                    targetPinName);
-                Trace.TraceError(errorMessage);
-                throw new ArgumentException(errorMessage);
-            }
-
-            return targetPinNumber;
         }
 
         /// <summary>

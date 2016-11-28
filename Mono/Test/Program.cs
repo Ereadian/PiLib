@@ -13,7 +13,7 @@
             var buttonPin = 18;
             var values = new GpioPinValue[]{ GpioPinValue.Low, GpioPinValue.High };
             var value = 0;
-            using (var gpio = new RemoteGpio( PinNaming.BCM))
+            using (var gpio = new LocalGpio( PinNaming.BCM))
             {
                 foreach (var pin in pins)
                 {
