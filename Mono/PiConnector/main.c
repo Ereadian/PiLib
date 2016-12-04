@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <wiringPi.h>
 
-#define LedPin 0
+#define DefaultPort 5555
 
 #define COMMAND_END 0
 #define COMMAND_PIN_SET_MODE 1
@@ -25,6 +25,38 @@ void exit_handler(int s)
    exit(1); 
 }
 
+struct RuntimeContext
+{
+    char* port;
+    int verbose;
+};
+
+void ProcessParamter(struct RuntimeContext *context, int argc, char *argv[])
+{
+    int idx = 0;
+    while(idx < argc)
+    {
+        char* parameter = argv[idx];
+        if (parameter[0] == '-')
+        {
+            switch(parameter[0])
+            {
+                case 'p':
+                    idx++;
+                    if (idx < argc)
+                    {
+                        context->port = argv[idx];
+                    }
+                    break;
+                case 'v':
+                    context->verbose = 1;
+                    break;
+            }
+        }
+        idx++;
+    }
+}
+
 int main (int argc, char *argv[])
 {
 	int newsockfd, portno, n, run;
@@ -32,8 +64,14 @@ int main (int argc, char *argv[])
 	struct sockaddr_in serv_addr, cli_addr;
 	char buffer[10];
     struct sigaction sigIntHandler;
+    struct RuntimeContext context;
 
-    portno = argc < 2 ? 5555 : atoi(argv[1]);
+    context.port = NULL;
+    context.verbose = 0;
+    ProcessParamter(&context, argc, argv);
+    portno = context.port == NULL ? DefaultPort : atoi(context.port);
+
+    printf("Port %d. Verbose:%s\n", portno, context.verbose ? "Yes" : "No");
 
 	if (wiringPiSetup() == -1)
 	{
@@ -102,7 +140,10 @@ int main (int argc, char *argv[])
 					}
 					else
 					{
-                        printf("Set mode. pin %d, dir:%d\n", (int)buffer[0], (int)buffer[1]);
+                        if (context.verbose)
+                        {
+                            printf("Set mode. pin %d, dir:%d\n", (int)buffer[0], (int)buffer[1]);
+                        }
 						pinMode((int)buffer[0], buffer[1] ? OUTPUT : INPUT);
 					}
 					break;
@@ -115,7 +156,10 @@ int main (int argc, char *argv[])
 					}
 					else
 					{
-                        printf("Set value. pin %d, value:%d\n", (int)buffer[0], (int)buffer[1]);
+                        if (context.verbose)
+                        {
+                            printf("Set value. pin %d, value:%d\n", (int)buffer[0], (int)buffer[1]);
+                        }
 						digitalWrite((int)buffer[0], buffer[1] ? HIGH :LOW);
 					}
 					break;
@@ -128,9 +172,15 @@ int main (int argc, char *argv[])
 					}
 					else
 					{
-                        printf("Get value. pin %d ", (int)buffer[0]);
+                        if (context.verbose)
+                        {
+                           printf("Get value. pin %d ", (int)buffer[0]);
+                        }
 						buffer[0] = digitalRead((int)buffer[0]);
-                        printf("value:%d\n", (int)buffer[0]);
+                        if (context.verbose)
+                        {
+                            printf("value:%d\n", (int)buffer[0]);
+                        }
 						n = write(newsockfd, buffer, 1);
 						if (n < 1)
 						{
@@ -148,7 +198,10 @@ int main (int argc, char *argv[])
                     }
                     else
                     {
-                        printf("Set button mode. pin %d, mode:%d\n", (int)buffer[0], (int)buffer[1]);
+                        if (context.verbose)
+                        {
+                            printf("Set button mode. pin %d, mode:%d\n", (int)buffer[0], (int)buffer[1]);
+                        }
                         pullUpDnControl((int)buffer[0], (int)buffer[1]);
                     }
                     break;
