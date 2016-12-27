@@ -39,7 +39,7 @@ void ProcessParamter(struct RuntimeContext *context, int argc, char *argv[])
         char* parameter = argv[idx];
         if (parameter[0] == '-')
         {
-            switch(parameter[0])
+            switch(parameter[1])
             {
                 case 'p':
                     idx++;
