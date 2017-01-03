@@ -5,9 +5,11 @@ Project("{2857B73E-F847-4B02-9238-064979017E93}") = "PiConnector", "PiConnector\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiHardware", "PiHardware\PiHardware.csproj", "{C1D58F91-23E2-4AC8-A682-2258AB7C3208}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{5B3A4293-7D09-4560-A613-FC9262E116BF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A7D59940-7FA4-495C-ACC8-30241C235B04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoystickTest", "JoystickTest\JoystickTest.csproj", "{2ADBB65B-6664-42C2-B36F-CA562AC2B705}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LedTest", "Tests\LedTest\LedTest.csproj", "{5B3A4293-7D09-4560-A613-FC9262E116BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoystickTest", "Tests\JoystickTest\JoystickTest.csproj", "{2ADBB65B-6664-42C2-B36F-CA562AC2B705}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,10 @@ Global
 		{C1D58F91-23E2-4AC8-A682-2258AB7C3208}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1D58F91-23E2-4AC8-A682-2258AB7C3208}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1D58F91-23E2-4AC8-A682-2258AB7C3208}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5B3A4293-7D09-4560-A613-FC9262E116BF} = {A7D59940-7FA4-495C-ACC8-30241C235B04}
+		{2ADBB65B-6664-42C2-B36F-CA562AC2B705} = {A7D59940-7FA4-495C-ACC8-30241C235B04}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

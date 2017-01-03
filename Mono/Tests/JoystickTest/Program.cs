@@ -20,7 +20,11 @@
                 while (!Console.KeyAvailable)
                 {
                     var data = joystick.GetEvent();
-                    if (data != null)
+                    if (data == null)
+                    {
+                        Thread.Sleep(50);
+                    }
+                    else
                     {
                         Console.WriteLine("Time:{0} Type:{1}, Data:{2}, Dev id:{3}", 
                             data.EventTimestamp,
@@ -28,8 +32,6 @@
                             data.Value, 
                             data.Number);
                     }
-
-                    Thread.Sleep(100);
                 }
 
                 Console.WriteLine("Exit");
