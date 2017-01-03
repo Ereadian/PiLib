@@ -2,9 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Concurrent;
+    using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Text.RegularExpressions;
+    using System.Threading;
 
     /// <summary>
     /// Joystick.
@@ -12,12 +15,17 @@
     /// <remarks>
     /// https://www.kernel.org/doc/Documentation/input/joystick-api.txt 
     /// </remarks>
-    public class Joystick : IDisposable
+    public class Joystick : IJoystick
     {
         /// <summary>
         /// Joystick system folder name
         /// </summary>
         private const string JoystickDeviceFolderName = "/dev/input";
+
+        /// <summary>
+        /// The size of the event buffer.
+        /// </summary>
+        private static readonly int EventBufferSize = sizeof(uint) + sizeof(short) + 2 * sizeof(byte);
 
         /// <summary>
         /// Regular express to match joystick device name
@@ -26,16 +34,8 @@
             = new Regex("^js[0-9]+", RegexOptions.Singleline | RegexOptions.Compiled);
 
         /// <summary>
-        /// Joystick event types
+        /// The full name of the joystick device.
         /// </summary>
-        private static IReadOnlyList<JoystickEventType> AllJoystickEventTypes;
-
-        /// <summary>
-        /// Joystick final full device name
-        /// </summary>
-        /// <remarks>
-        /// For example: /dev/input/js0
-        /// </remarks>
         private readonly string joystickDeviceFullName;
 
         /// <summary>
@@ -47,31 +47,32 @@
         private FileStream joystickDeviceStream;
 
         /// <summary>
-        /// Type constructor
+        /// event queue or unblock event read operation
         /// </summary>
-        static Joystick()
-        {
-            var enventNames = Enum.GetNames(typeof(JoystickEventType));
-            var eventTypes = new JoystickEventType[enventNames.Length];
-            for (var i = 0; i < enventNames.Length; i++)
-            {
-                eventTypes[i] = (JoystickEventType)Enum.Parse(typeof(JoystickEventType), enventNames[i]);
-            }
+        private ConcurrentQueue<JoystickEvent> eventQueue;
 
-            AllJoystickEventTypes = eventTypes;
-        }
+        /// <summary>
+        /// Event read worker thread
+        /// </summary>
+        private Thread dataReaderThread;
+
+        /// <summary>
+        /// shudown event to stop event reader worker thread
+        /// </summary>
+        private ManualResetEventSlim shutdownEvent;
 
         /// <summary>
         /// Instance constructor
         /// </summary>
         /// <param name="joystickDeviceName">Joystick device name.</param>
-        public Joystick(string joystickDeviceName)
+        public Joystick(string joystickDeviceName, bool blockMode = false)
         {
-            if (joystickDeviceName == null)
+            if (string.IsNullOrWhiteSpace(joystickDeviceName))
             {
-                throw new ArgumentNullException("parameter \"joystickDeviceName\" should not be null");
+                throw new ArgumentNullException("parameter \"joystickDeviceName\" should not be null or blank");
             }
 
+            joystickDeviceName = joystickDeviceName.Trim();
             if (!JoyStickDeviceNameRegEx.IsMatch(joystickDeviceName))
             {
                 var errorMessage = string.Format(
@@ -81,8 +82,22 @@
                 throw new ArgumentException(errorMessage);
             }
 
-            joystickDeviceFullName = Path.Combine(JoystickDeviceFolderName, joystickDeviceName);
-            this.joystickDeviceStream = null;
+            this.joystickDeviceFullName = Path.Combine(JoystickDeviceFolderName, joystickDeviceName);
+            this.joystickDeviceStream = new FileStream(this.joystickDeviceFullName, FileMode.Open, FileAccess.Read);
+
+            if (blockMode)
+            {
+                this.eventQueue = null;
+                this.shutdownEvent = null;
+                this.dataReaderThread = null;
+            }
+            else
+            {
+                this.eventQueue = new ConcurrentQueue<JoystickEvent>(); 
+                this.shutdownEvent = new ManualResetEventSlim(false);
+                this.dataReaderThread = new Thread(this.DataReaderWorker);
+                this.dataReaderThread.Start();
+            }
         }
 
         /// <summary>
@@ -91,39 +106,34 @@
         /// <returns>The event.</returns>
         public JoystickEvent GetEvent()
         {
-            byte[] eventData = new byte[8];
-            var dataRead = this.DeviceStream.Read(eventData, 0, eventData.Length);
-            if (dataRead == 0)
-            {
-                return null;
-            }
+            JoystickEvent joystickEvent;
 
-            if (dataRead != eventData.Length)
+            if (this.shutdownEvent != null)
             {
-                throw new ApplicationException("Failed to read joystick data");
-            }
-
-            var timestamp = BitConverter.ToUInt32(eventData, 0);
-            var value = BitConverter.ToInt16(eventData, 4);
-            var type = eventData[6];
-            int number = (int)eventData[7];
-
-            var eventType = JoystickEventType.None;
-            for (var i = 0; i < AllJoystickEventTypes.Count; i++)
-            {
-                var joystickEventType = AllJoystickEventTypes[i];
-                if ((type & (byte)joystickEventType) != 0)
+                if (!this.eventQueue.TryDequeue(out joystickEvent))
                 {
-                    eventType |= joystickEventType;
+                    joystickEvent = null;
                 }
             }
+            else
+            {
+                byte[] eventData = new byte[8];
+                var dataRead = this.joystickDeviceStream.Read(eventData, 0, eventData.Length);
+                if (dataRead == 0)
+                {
+                    joystickEvent = null;
 
-            var joystickEvent = new JoystickEvent(
-                timestamp,
-                value,
-                eventType,
-                number
-            );
+                }
+                else
+                {
+                    if (dataRead != eventData.Length)
+                    {
+                        throw new ApplicationException("Failed to read joystick data");
+                    }
+                
+                    joystickEvent = new JoystickEvent(eventData);
+                }
+            }
 
             return joystickEvent;
         }
@@ -149,6 +159,15 @@
         {
             lock (this)
             {
+                if (this.shutdownEvent != null)
+                {
+                    this.shutdownEvent.Set();
+                    this.dataReaderThread.Join();
+                    this.shutdownEvent.Dispose();
+                    this.dataReaderThread = null;
+                    this.shutdownEvent = null;
+                }
+
                 if (this.joystickDeviceStream != null)
                 {
                     this.joystickDeviceStream.Dispose();
@@ -156,33 +175,7 @@
                 }
             }
         }
-
-        /// <summary>
-        /// Get joystream device stream
-        /// </summary>
-        /// <value>The device stream.</value>
-        protected FileStream DeviceStream
-        {
-            get
-            {
-                FileStream stream = this.joystickDeviceStream;
-                if (stream == null)
-                {
-                    lock (this)
-                    {
-                        stream = this.joystickDeviceStream;
-                        if (stream == null)
-                        {
-                            stream = new FileStream(this.joystickDeviceFullName, FileMode.Open, FileAccess.Read);
-                            this.joystickDeviceStream = stream;
-                        }
-                    }
-                }
-
-                return stream;
-            }
-        }
-
+            
         /// <summary>
         /// Get all joystick device names
         /// </summary>
@@ -204,6 +197,53 @@
             joyStickNames.Sort();
             return joyStickNames;
         }
+
+        /// <summary>
+        /// Data Reader worker thread
+        /// </summary>
+        private void DataReaderWorker()
+        {
+            var waitHandles = new WaitHandle[]{ this.shutdownEvent.WaitHandle, null };
+            var buffer = new byte[EventBufferSize];
+            IAsyncResult asyncResult = null;
+
+            while (true)
+            {
+                try
+                {
+                    asyncResult = this.joystickDeviceStream.BeginRead(
+                        buffer,
+                        0,
+                        EventBufferSize,
+                        null,
+                        null);
+                    waitHandles[1] = asyncResult.AsyncWaitHandle;
+                    if (WaitHandle.WaitAny(waitHandles) == 0)
+                    {
+                        break;
+                    }
+
+                    var dataRead = this.joystickDeviceStream.EndRead(asyncResult);
+                    if (dataRead != EventBufferSize)
+                    {
+                        var errorMessage = string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Expected to read {0} bytes from joystick device \"{1}\". However, only {2} bytes returned",
+                            EventBufferSize,
+                            this.joystickDeviceFullName,
+                            dataRead);
+                        throw new IOException(errorMessage);
+                    }
+
+                    var joystickEvent = new JoystickEvent(buffer);
+                    this.eventQueue.Enqueue(joystickEvent);
+                }
+                catch(Exception exception)
+                {
+                    Trace.TraceError("Joystick.DataReaderWorker: "+ exception.ToString());
+                    break;
+                }
+            }
+        }
     }
 }
-

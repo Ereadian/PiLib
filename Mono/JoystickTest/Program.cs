@@ -28,6 +28,8 @@
                             data.Value, 
                             data.Number);
                     }
+
+                    Thread.Sleep(100);
                 }
 
                 Console.WriteLine("Exit");

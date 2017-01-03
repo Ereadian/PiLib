@@ -48,6 +48,7 @@
     <Compile Include="GPIO\RemoteGpio.cs" />
     <Compile Include="Joysticks\JoystickEvent.cs" />
     <Compile Include="Joysticks\JoystickEventType.cs" />
+    <Compile Include="Joysticks\IJoystick.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
