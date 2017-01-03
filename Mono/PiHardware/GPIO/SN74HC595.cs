@@ -8,14 +8,14 @@
     /// <remarks>>
     /// http://www.ti.com/product/SN74HC595
     ///     +-- --+
-    ///  Q1 | +-+ | Vcc
-    ///  Q2 |     | Q0
-    ///  Q3 |     | DS
-    ///  Q4 |     | OE
-    ///  Q5 |     | ST CP
-    ///  Q6 |     | SH CP
-    ///  Q7 |     | MR
-    /// GND |     | Q7`
+    ///  Qb | +-+ | Vcc
+    ///  Qc |     | Qa
+    ///  Qd |     | DS (Data line)
+    ///  Qe |     | OE
+    ///  Qf |     | ST CP (shift lock)
+    ///  Qg |     | SH CP (memory lock)
+    ///  Qh |     | MR
+    /// GND |     | Qh`
     ///     +-----+
     /// 0:high bit, 7:low bit
     /// </remarks>
@@ -32,7 +32,7 @@
         /// <param name="gpio">gpio instance</param>
         /// <param name="dsPinNumber">pin number which connected to DS (SDI serial data input)</param>
         /// <param name="shPinNumber">pin number which connected to SH CP (shift register clock input).</param>
-        /// <param name="stPinNumber">pin number which connected to ST CP (RCLK emory clock input).</param>
+        /// <param name="stPinNumber">pin number which connected to ST CP (RCLK memory clock input).</param>
         public SN74HC595(IGpio gpio, int dsPinNumber, int shPinNumber, int stPinNumber)
         {
             this.gpio = gpio;
@@ -49,6 +49,15 @@
             this.gpio[shPinNumber] = GpioPinValue.Low;
         }
 
+        /// <summary>
+        /// Send data
+        /// </summary>
+        /// <param name="data">Data.</param>
+        /// <remarks>>
+        /// The high bit will be shifted first. In another words, the mapping to Chip pin is:
+        /// Sent bit:  7  6  5  4  3  2  1  0
+        /// Chip pin: Qa Qb Qc Qd Qe Qf Qg Qh
+        /// </remarks>
         public void Send(byte data)
         {
             byte mask = 0x80;
@@ -62,6 +71,11 @@
             this.Pulse(stPinNumber);
         }
 
+        /// <summary>
+        /// Pulse the specified pinNumber.
+        /// </summary>
+        /// <param name="pinNumber">Pin number.</param>
+        /// <remarks>>Send a signal to chip</remarks>
         private void Pulse(int pinNumber)
         {
             this.gpio[pinNumber] = GpioPinValue.Low;
