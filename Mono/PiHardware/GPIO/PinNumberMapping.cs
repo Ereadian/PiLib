@@ -1,4 +1,4 @@
-﻿namespace Ereadian.RaspberryPi.Library.Hardware
+﻿namespace Ereadian.RaspberryPi.Library.Hardware.GPIO
 {
 	using System;
 	using System.Collections.Generic;

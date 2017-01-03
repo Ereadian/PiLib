@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiHardware", "PiHardware\Pi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{5B3A4293-7D09-4560-A613-FC9262E116BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoystickTest", "JoystickTest\JoystickTest.csproj", "{2ADBB65B-6664-42C2-B36F-CA562AC2B705}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{12E06183-56C3-4124-9D3E-5B004368B042}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12E06183-56C3-4124-9D3E-5B004368B042}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12E06183-56C3-4124-9D3E-5B004368B042}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ADBB65B-6664-42C2-B36F-CA562AC2B705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ADBB65B-6664-42C2-B36F-CA562AC2B705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ADBB65B-6664-42C2-B36F-CA562AC2B705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ADBB65B-6664-42C2-B36F-CA562AC2B705}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5B3A4293-7D09-4560-A613-FC9262E116BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5B3A4293-7D09-4560-A613-FC9262E116BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B3A4293-7D09-4560-A613-FC9262E116BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,7 +33,6 @@ Global
 		{C1D58F91-23E2-4AC8-A682-2258AB7C3208}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Test\Test.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = None
@@ -72,5 +77,6 @@ Global
 		$5.inheritsSet = Mono
 		$5.inheritsScope = text/x-csharp
 		$5.scope = text/x-csharp
+		StartupItem = Test\Test.csproj
 	EndGlobalSection
 EndGlobal

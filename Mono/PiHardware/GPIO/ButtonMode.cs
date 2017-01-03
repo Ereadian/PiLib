@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ereadian.RaspberryPi.Library.Hardware
+namespace Ereadian.RaspberryPi.Library.Hardware.GPIO
 {
     /// <summary>
     /// Button mode.

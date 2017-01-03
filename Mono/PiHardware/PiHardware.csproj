@@ -32,19 +32,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IGpio.cs" />
-    <Compile Include="PinNumberMapping.cs" />
-    <Compile Include="PinNaming.cs" />
-    <Compile Include="IPinNumberMapping.cs" />
-    <Compile Include="GpioPinDirection.cs" />
-    <Compile Include="GpioPinValue.cs" />
     <Compile Include="Singleton.cs" />
-    <Compile Include="RemoteGpio.cs" />
-    <Compile Include="ButtonMode.cs" />
-    <Compile Include="LocalGpio.cs" />
-    <Compile Include="IPinNumberMappingExtensions.cs" />
-    <Compile Include="GpioBase.cs" />
-    <Compile Include="Gpio.cs" />
+    <Compile Include="Joysticks\Joystick.cs" />
+    <Compile Include="GPIO\ButtonMode.cs" />
+    <Compile Include="GPIO\Gpio.cs" />
+    <Compile Include="GPIO\GpioBase.cs" />
+    <Compile Include="GPIO\GpioPinDirection.cs" />
+    <Compile Include="GPIO\GpioPinValue.cs" />
+    <Compile Include="GPIO\IGpio.cs" />
+    <Compile Include="GPIO\IPinNumberMapping.cs" />
+    <Compile Include="GPIO\IPinNumberMappingExtensions.cs" />
+    <Compile Include="GPIO\LocalGpio.cs" />
+    <Compile Include="GPIO\PinNaming.cs" />
+    <Compile Include="GPIO\PinNumberMapping.cs" />
+    <Compile Include="GPIO\RemoteGpio.cs" />
+    <Compile Include="Joysticks\JoystickEvent.cs" />
+    <Compile Include="Joysticks\JoystickEventType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Properties\New Folder\" />
+    <Folder Include="Joysticks\" />
+    <Folder Include="GPIO\" />
+  </ItemGroup>
 </Project>
