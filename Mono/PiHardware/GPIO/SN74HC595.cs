@@ -53,22 +53,57 @@
         /// Send data
         /// </summary>
         /// <param name="data">Data.</param>
+        /// <param name="fromHighToLow">send bits from high to low (bit 8 to 1)</param>
         /// <remarks>>
-        /// The high bit will be shifted first. In another words, the mapping to Chip pin is:
+        /// if fromHighToLow is true, the high bit will be shifted first. In another words, the mapping to Chip pin is:
         /// Sent bit:  7  6  5  4  3  2  1  0
         /// Chip pin: Qa Qb Qc Qd Qe Qf Qg Qh
+        /// if fromHighToLow is false, the low bit will be shifted first. In another words, the mapping to Chip pin is:
+        /// Sent bit:  7  6  5  4  3  2  1  0
+        /// Chip pin: Qh Qg Qf Qe Qd Qc Qb Qa
         /// </remarks>
-        public void Send(byte data)
+        public void Send(byte data, bool fromHighToLow = true)
+        {
+            if (fromHighToLow)
+            {
+                SendByteFromHighToLow(data);
+            }
+            else
+            {
+                SendByteFromLowToHigh(data);
+            }
+
+            this.Pulse(stPinNumber);
+        }
+
+        /// <summary>
+        /// Sends the byte from high bits to low bits.
+        /// </summary>
+        /// <param name="data">Data to send</param>
+        private void SendByteFromHighToLow(byte data)
         {
             byte mask = 0x80;
             for (var i = 0; i < 8; i++)
             {
-                this.gpio[dsPinNumber] = ((data & mask) == 0) ? GpioPinValue.Low : GpioPinValue.High;
-                this.Pulse(shPinNumber);
+                this.gpio[this.dsPinNumber] = ((data & mask) == 0) ? GpioPinValue.Low : GpioPinValue.High;
+                this.Pulse(this.shPinNumber);
                 mask = (byte)(mask >> 1);
             }
+        }
 
-            this.Pulse(stPinNumber);
+        /// <summary>
+        /// Sends the byte from high bits to low bits.
+        /// </summary>
+        /// <param name="data">Data to send</param>
+        private void SendByteFromLowToHigh(byte data)
+        {
+            byte mask = 0x01;
+            for (var i = 0; i < 8; i++)
+            {
+                this.gpio[this.dsPinNumber] = ((data & mask) == 0) ? GpioPinValue.Low : GpioPinValue.High;
+                this.Pulse(this.shPinNumber);
+                mask = (byte)(mask << 1);
+            }
         }
 
         /// <summary>
